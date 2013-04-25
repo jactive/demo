@@ -1,0 +1,31 @@
+<script>
+  var MyClass = function(x, y) {
+    // instance variable
+    this.x = x;
+    this.y = y;
+  };
+  var p = MyClass.prototype;
+  p.printx = function() {
+    console.log(this.x);
+  };
+  // instance method
+  // all the instance's instance method is same.
+  p.printy = function() {
+    console.log(this.y);
+  };
+
+  var o1 = new MyClass("o1.x", "o1.y");
+  var o2 = new MyClass("o2.x", "o2.y");
+  o1.printx();
+  o2.printx();
+  o1.printy();
+  o2.printy();
+  console.log(o1.printx === o2.printx);
+  console.log("o1: " + (typeof o1));
+  console.log("MyClass: " + (typeof MyClass));
+  console.log("o1.printx: " + (typeof o1.printx));
+  console.log("{}: " + (typeof {}));
+  console.log('"": ' + (typeof ""));
+  console.log('1: ' + (typeof 1));
+</script>
+
