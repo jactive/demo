@@ -1,0 +1,40 @@
+<script>
+  var Shape = function(name) {
+    this.name = name;
+  };
+  // instance method shared by all Shape instances
+  Shape.prototype.getName = function() {
+    return this.name;
+  };
+
+  var Circle = function(radius) {
+    this.radius = radius;
+    this.prototype = new Shape('circle');
+    // this.prototype.apply('circle');
+  };
+  Circle.prototype.getRadius = function() {
+    return this.radius;
+  };
+
+  var Rectangle = function(width, height) {
+    this.width = width;
+    this.height = height;
+    this.prototype = new Shape('rectangle');
+  };
+  Rectangle.prototype.getWidth = function() {
+    return this.width;
+  };
+  Rectangle.prototype.getHeight = function() {
+    return this.height;
+  };
+
+  var c = new Circle(3);
+  var r = new Rectangle(11, 22);
+  var l = console.log;
+  l(c.getName());
+  l(c.getRadius());
+
+  l(r.getName());
+  l(r.getWidth());
+  l(r.getHeight());
+</script>
