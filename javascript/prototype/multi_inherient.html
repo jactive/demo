@@ -132,4 +132,19 @@
   // Furthurmore, both o1 and o2 are able to inherient o0.p0
   assertEquals(o0.p0, o1.p0);
   assertEquals(o0.p0, o2.p0);
+
+  // Not sure why, but the following is true.
+  assertEquals(SC0, o1.constructor);
+  assertEquals(SC0, o2.constructor);
+  assertEquals(SC0, new SC1().constructor);
+  assertEquals(SC0, new SC2().constructor);
+  // But o2 is still able to inherient from o1
+  assertEquals(undefined, o2.p1);
+  o1.p1 = "property p1 in o1";
+  assertEquals(o1.p1, o2.p1);
+  assertEquals(o1.p1, new SC2().p1);
+
+
+  // We should setup the constructor.prototype at the begining.
+  // We try not to touch __proto__ since it is a hidden object
 </script>
