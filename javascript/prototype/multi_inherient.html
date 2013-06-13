@@ -1,0 +1,135 @@
+<script>
+  // TEST DONE:
+  //   FF 21.0
+  //   Chrome 27.0.1453.93 (Official Build 200836) 
+  var assertEquals = function(a, b) {
+    if (a !== b) {
+      throw new Error("Assert fails: " + a + " === " + b);
+    }
+  };
+  var assertNotEquals = function(a, b) {
+    if (a === b) {
+      throw new Error("Assert fails: " + a + " !== " + b);
+    }
+  };
+
+  s1 = {}; // super class 1
+  o  = {}; // object 1
+  o.constructor.prototype = s1;
+  // Cannot change Object.prototype. Object is the construtor function
+  assertNotEquals(o.constructor.prototype, s1);
+  o.__proto__ = s1;
+  // __proto__ is a property. When the object was created, constructor
+  // copy constructor.prototype into __proto__ property of the new instance
+  assertEquals(o.__proto__, s1);
+  // Change the __proto__ property of a instance will not affect the
+  // constructor.prototype 
+  assertNotEquals(o.constructor.property, o.__proto__);
+  assertEquals(undefined, o.v);
+  s1.v = 's1 value';
+  assertEquals(s1.v, o.v);
+
+  s1 = {};
+  o = new function() {
+  };
+  //! Not same with each other.
+  assertNotEquals(Object.prototype, o.constructor.prototype);
+  o.constructor.prototype = s1;
+  // Able to change any constructor.prototype except Object constructor
+  assertEquals(o.constructor.prototype, s1);
+  s1.v = 'value';
+  // o.__proto__ is set to Object.prototype when o1 is created.
+  // o.__proto__ cannot be updated to s1 when o.constructor.prototype
+  // was updated to s1.
+  assertNotEquals(s1.v, o.v);
+  assertEquals(undefined, o.v);
+  //! Attention, o.__proto__.toString() looks same as
+  //! Object.prototype.toString() in literal. But it is acutall not
+  //! the same one.
+  assertNotEquals(Object.prototype, o.__proto__);
+  // Update __proto__ manually. So o is able to have the property v
+  // inheriented from s1;
+  o.__proto__ = s1;
+  assertEquals(s1.v, o.v);
+
+
+  // A complicated one:
+  //    class inherient: SC0 <-- SC1 <-- SC2
+  //    related objects: o0      o1      o2
+  var SC0 = function SC0() {
+  };
+  var SC1 = function SC1() {
+  };
+  var SC2 = function SC2() {
+  };
+  // since the constructor.prototype is not set yet,
+  // o0, o1, o2's __proto__ is Object.prototype
+  var o0 = new SC0();
+  var o1 = new SC1();
+  var o2 = new SC2();
+
+  assertEquals(o0.constructor, SC0);
+  assertEquals(o0.__proto__,   SC0.prototype);
+  assertEquals(o1.constructor, SC1);
+  assertEquals(o1.__proto__,   SC1.prototype);
+  assertEquals(o2.constructor, SC2);
+  assertEquals(o2.__proto__,   SC2.prototype);
+  //! Attention: SC0.prototype is different with Object.prototype.
+  //! It is a object that will be shared among all the objects of SC0.
+  assertNotEquals(Object.prototype, o0.constructor.prototype);
+  assertNotEquals(Object.prototype, o1.constructor.prototype);
+  assertNotEquals(Object.prototype, o1.constructor.prototype);
+
+  SC1.prototype = o0;
+  assertEquals(o1.constructor.prototype, o0);
+
+  o2.constructor.prototype = o1;
+  assertEquals(o2.constructor.prototype, o1);
+  assertEquals(SC2.prototype, o1);
+  assertEquals(SC2.prototype.constructor, SC1);
+  assertEquals(SC2.prototype.constructor.prototype, o0);
+  assertEquals(o2.constructor, SC2);
+  assertEquals(o2.constructor.prototype.constructor.prototype, o0);
+
+  o0.p0 = 'property 0 in c0';
+  // o1.p0 and o2.p0 is still undefined although the constructor.prototype
+  // is setup corrected simeply because the constructor.prototype is
+  // Object.prototype when o1 and o2 was been created
+  assertEquals(undefined, o1.p0);
+  assertEquals(undefined, o2.p0);
+  //! Attention: as previous attention, o1.__proto__ is not the same as 
+  //! Object.prototype
+  assertNotEquals(Object.prototype, o1.__proto__);
+  assertNotEquals(Object.prototype, o2.__proto__);
+
+  // New object SC1 is able to inherit the p0 from o0 because
+  // constructor.prototype was setuped correctly.
+  assertEquals(o0.p0, new SC1().p0);
+  // But new SC2 object still does not work. Why?
+  assertNotEquals(o0.p0, new SC2().p0);
+  assertEquals(undefined, new SC2().p0);
+  // Simply because SC2.prototype is still the old o1
+  // whose __proto__ is not o0. We can get the v0 from
+  // o0 by two ways.
+  assertEquals(SC2.prototype, o1);
+  // 1. Update the SC2.prototype to the correct new SC1 object.
+  SC2.prototype = new SC1();
+  assertEquals(o0.p0, new SC2().p0);
+  // But the old o1 and o2 still cannot inherient o0.p0
+  assertEquals(o1.p0, undefined);
+  assertEquals(o2.p0, undefined);
+
+  // restore
+  SC2.prototype = o1;
+  assertNotEquals(o0.p0, new SC2().p0);
+  assertEquals(undefined, new SC2().p0);
+  // done
+
+  // 2. Update the o1.__proto__ and o2.__proto__
+  o1.__proto__ = o0;
+  o2.__proto__ = o1
+  assertEquals(o0.p0, new SC2().p0);
+  // Furthurmore, both o1 and o2 are able to inherient o0.p0
+  assertEquals(o0.p0, o1.p0);
+  assertEquals(o0.p0, o2.p0);
+</script>
