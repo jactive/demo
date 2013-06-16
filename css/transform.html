@@ -1,0 +1,249 @@
+<script src="/jquery.js"></script>
+<style>
+div label.transform {
+  width: 20%;
+  float: left;
+}
+</style>
+<p style="padding-left: 200px; padding-top: 200px; background-color: #EEE;">
+<img id="target" src="http://g.hiphotos.baidu.com/album/w%3D230/sign=57fa83ff6d81800a6ee58e0d813433d6/d31b0ef41bd5ad6e5b661e9a80cb39dbb6fd3c26.jpg" style="border: solid 5px #BBB"></img>
+</p>
+<p>
+  <div>
+    <label for="transformWidth" class="transform">Width</label>
+    <input id="transformWidth" type="text" class="transformValue" value="0" >
+    <button id="btnIncrease_transformWidth" class="increaseInt holdeIncreaseInt">+</button>              
+    <button id="btnDecrease_transformWidth" class="decreaseInt">-</button>
+  </div>
+  <div>
+    <label for="transformHeight" class="transform">Height</label>
+    <input id="transformHeight" type="text" class="transformValue" value="0" >
+    <button id="btnIncrease_transformHeight" class="increaseInt holdeIncreaseInt">+</button>
+    <button id="btnDecrease_transformHeight" class="decreaseInt">-</button>
+  </div>
+</p>
+<p>
+  <div>
+    <label for="transformScaleX" class="transform">-webkit-transform scale X</label>
+    <input id="transformScaleX" type="text" class="transformValue" value="1.00" >
+    <button id="btnIncrease_transformScaleX" class="increaseFloat holdeIncreaseFloat">+</button>
+    <button id="btnDecrease_transformScaleX" class="decreaseFloat">-</button>
+  </div>
+  <div>
+    <label for="transformScaleY" class="transform">-webkit-transform scale Y</label>
+    <input id="transformScaleY" type="text" class="transformValue" value="1.00" >
+    <button id="btnIncrease_transformScaleY" class="increaseFloat holdeIncreaseFloat">+</button>
+    <button id="btnDecrease_transformScaleY" class="decreaseFloat">-</button>
+  </div>
+</p>
+<p>
+  <div>
+    <label for="transformRotate" class="transform">-webkit-transform rotate</label>
+    <input id="transformRotate" type="text" class="transformValue" value="0" >
+    <button id="btnIncrease_transformRotate" class="increaseInt holdeIncreaseInt">+</button>
+    <button id="btnDecrease_transformRotate" class="decreaseInt">-</button>
+  </div>
+</p>
+
+
+<p>
+  <div>
+    <label for="transformTranslateX" class="transform">-webkit-transform translate X</label>
+    <input id="transformTranslateX" type="text" class="transformValue" value="0" >
+    <button id="btnIncrease_transformTranslateX" class="increaseInt holdeIncreaseInt">+</button>              
+    <button id="btnDecrease_transformTranslateX" class="decreaseInt">-</button>
+  </div>
+  <div>
+    <label for="transformScaleY" class="transform">-webkit-transform translate Y</label>
+    <input id="transformTranslateY" type="text" class="transformValue" value="0" >
+    <button id="btnIncrease_transformTranslateY" class="increaseInt holdeIncreaseInt">+</button>
+    <button id="btnDecrease_transformTranslateY" class="decreaseInt">-</button>
+  </div>
+</p>
+
+<p>
+  <div>
+    <label for="transformOriginX" class="transform">-webkit-transform-origin X</label>
+    <input id="transformOriginX" type="text" class="transformValue" value="50" >
+    <button id="btnIncrease_transformOriginX" class="increaseInt holdeIncreaseInt ">+</button>
+    <button id="btnDecrease_transformOriginX" class="decreaseInt">-</button>
+  </div>
+  <div>
+    <label for="transformOriginY" class="transform">-webkit-transform-origin Y</label>
+    <input id="transformOriginY" type="text" class="transformValue" value="50" >
+    <button id="btnIncrease_transformOriginY" class="increaseInt holdeIncreaseInt ">+</button>
+    <button id="btnDecrease_transformOriginY" class="decreaseInt">-</button>
+  </div>
+</p>
+<p>
+  <pre id="desiredCss"></pre>
+</p>
+<p>
+  <a href="http://www.w3cplus.com/content/css3-transform/">learn more</a>
+</p>
+
+
+
+<script>
+var __logic = new function() {
+  var getId = function(btnNode) {
+    var r = /^btn(.*)_(.+)$/.exec(btnNode.id);
+    return r && "#" + r[2];
+  };
+
+  var result = {
+    transformWidth: 0,
+    transformHeight: 0,
+    transformScaleX: 1,
+    transformScaleY: 1,
+    transformRotate: 0,
+    transformTranslateX: 0,
+    transformTranslateY: 0,
+    transformOriginX: 50,
+    transformOriginY: 50
+  };
+
+  var target = $('#target');
+  this.setTarget = function(t) {
+    target = $('#' + t);
+  };
+
+  var update = function(id, v) {
+    if (id && undefined !== v) {
+      if ("#" === id.charAt(0) ) {
+        id = id.substr(1);
+      }
+
+      result[id] = v;
+    }
+    // console.log(JSON.stringify(result, null, 2));
+
+    var width = 0;
+    if (0 !== result.transformWidth) {
+      width = result.transformWidth;
+    }
+    var height = 0;
+    if (0 !== result.transformHeight) {
+      height = result.transformHeight;
+    }
+   
+    var origin = result.transformOriginX + "% " + result.transformOriginY + "%";
+
+    var scale = "scale(" + result.transformScaleX + ", " + result.transformScaleY + ")";
+    var translate = "translate(" + result.transformTranslateX + "px, " + result.transformTranslateY + "px)";
+    var rotate = "rotate(" + result.transformRotate + "deg)";
+    
+    var append = function(x, y) {
+      if (x.length > 0 && y.length > 0) {
+        x += " ";
+      }
+      return x + y;
+    };
+    var transform = append("", scale);
+        transform = append(transform, translate);
+        transform = append(transform, rotate);
+    
+
+    var css = "";
+    append = function(x, y) {
+      if (x.length > 0) {
+        x += "\n";
+      }
+      return x + y + ";";
+    };
+    if (0 !== width) {
+      css = append(css, "width: " + width);
+      target.width(width);
+    }
+    if (0 !== height) {
+      css = append(css, "height: " + height);
+      target.height(height);
+    }
+    if (0 !== transform.length) {
+      css = append(css, "-webkit-transform: " + transform);
+      target.css("-webkit-transform", transform);
+    }
+    if (0 !== origin.length) {
+      css = append(css, "-webkit-transform-origin: " + origin);
+      target.css("-webkit-transform-origin", origin);
+    }
+    $('#desiredCss').html('updating...\n' + css);
+  };
+
+  var change = this.change = function(btnNode, unit) {
+    var id = getId(btnNode);
+    $(id).val(function() {
+      var v = parseFloat(this.value);
+          v += unit;
+      // Changing float
+      if (Math.abs(unit) < 1 ) {
+        v = v.toFixed(2);
+        if (v == 0 ) {
+          v = 0;
+        }
+      }
+      update(id, v);
+      return v;
+    });
+  };
+  
+  var holderHandlers =  {};
+  var interval = 100; // ms;
+  var makeHandlerName = function(id, unit) {
+    return id + "_" + unit + "_handler";
+  };
+
+  this.hold = function(btnNode, unit) {
+    var id = getId(btnNode);
+    var handlerName = makeHandlerName(id, unit);
+    holderHandlers[handlerName] = setInterval(
+        function() { change(btnNode, unit)}, interval);
+  };
+
+  this.release = function(btnNode, unit) {
+    var id = getId(btnNode);
+    var handlerName = makeHandlerName(id, unit);
+    clearInterval(holderHandlers[handlerName]);
+  };
+
+  var confirm = this.confirm = function(node) {
+    var id = node.id;
+    $(node).val(function() {
+      var v = parseFloat(this.value);
+      if (isNaN(v) ) {
+        v = 0;
+      }
+      result[id] = v;
+      update(id, v);
+      return v;
+    });
+  };
+
+  this.enter = function(node, e) {
+    if (13 === e.which) {
+      confirm(node);
+    }
+  };
+};
+
+$('.transformValue').blur(function() { __logic.confirm(this) } );
+$('.transformValue').keydown(function(e) { __logic.enter(this, e) } );
+
+$('.increaseInt').click(function() { __logic.change(this,  1); });
+$('.increaseInt').mousedown(function() { __logic.hold(this,  1); });
+$('.increaseInt').mouseup(function() { __logic.release(this,  1); });
+
+$('.decreaseInt').click(function() { __logic.change(this, -1); });
+$('.decreaseInt').mousedown(function() { __logic.hold(this,  -1); });
+$('.decreaseInt').mouseup(function() { __logic.release(this, -1); });
+
+
+$('.increaseFloat').click(function() { __logic.change(this,  0.01); });
+$('.increaseFloat').mousedown(function() { __logic.hold(this,  0.01); });
+$('.increaseFloat').mouseup(function() { __logic.release(this,  0.01); });
+
+$('.decreaseFloat').click(function() { __logic.change(this, -0.01); });
+$('.decreaseFloat').mousedown(function() { __logic.hold(this,  -0.01); });
+$('.decreaseFloat').mouseup(function() { __logic.release(this, -0.01); });
+
+</script>
