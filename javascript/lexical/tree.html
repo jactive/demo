@@ -1,0 +1,87 @@
+<script>
+// tree command
+// http://www.htmlfivewow.com/demos/terminal/terminal.html
+// TBD: refactor
+function tree(fs) {
+  var reader = fs.root.createReader();
+  
+  console.log('/');
+  var onError = function(e) {
+    console.log(e);
+  };
+  var format = function(indents, isLastItem) {
+    var prefix = ""
+    for ( var i=0; i < indents.length; i++) {
+      prefix += indents[i] ? "    " : "|   ";
+    }
+    return prefix + (isLastItem ? "`-- " : "|-- ");
+  };
+
+  var doItlater = function(folderInfo, iterate) {
+    var interval = 20;
+    var redo = function() {
+      if (folderInfo.blocked) {
+        setTimeout(redo, interval);
+      } else {
+        iterate.call();
+      }
+    };
+
+    setTimeout(redo, 20);
+  };
+
+  var createOnReadEntriesSuccess = function(folderInfo) {
+    return function(entries) {
+        // create a new function/closure to save the parent
+        // folderInfo in current lexical, which will be used
+        // when traversing child folder 
+        onReadEntriesSuccess.call(null, entries, folderInfo);
+    };
+  };
+
+  var onReadEntriesSuccess = function(entries, parentFolderInfo) {
+    var folderInfo = {
+      // its size is the indent. its value means if it
+      // is the last item in current folder
+      indents: parentFolderInfo ? parentFolderInfo.indents : [],
+      blocked: false,
+    };
+
+    if (entries) {
+      var i = 0;
+      var iterate = function() {
+        while (i < entries.length) {
+          var prefix = format(folderInfo.indents, entries.length == i+1);
+          console.log(prefix + entries[i].name + " (" + (entries[i].isDirectory ? "D" : "F") + ") [" + entries[i].fullPath + "]");
+          if (entries[i].isDirectory ) {
+            folderInfo.indents.push(entries.length == i+1);
+            folderInfo.blocked = true;
+            entries[i].createReader().readEntries(createOnReadEntriesSuccess(folderInfo), onError );
+            i++; // the loop will recovered later
+            doItlater(folderInfo, iterate);
+            return;
+          }
+          i++;
+        }
+
+        // All entries is iterated. clear the parentFolderInfo
+        if (parentFolderInfo) {
+          parentFolderInfo.indents.pop();
+          parentFolderInfo.blocked = false;
+        }
+      };
+      doItlater(folderInfo, iterate);
+    }
+  };
+  reader.readEntries(onReadEntriesSuccess, onError);
+}
+
+
+function _tree() {
+  function onInitFsSuccess(fs) { tree(fs); }
+  function onError(e) { console.error(e); }
+  window.webkitRequestFileSystem(window.TEMPORARY, 5*1024*1024 /*5MB*/, onInitFsSuccess, onError);
+}
+
+_tree();
+</script>
