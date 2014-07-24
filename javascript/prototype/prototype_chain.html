@@ -1,0 +1,58 @@
+<script>
+  // Seek property in the prototype chain.
+  // TEST DONE:
+  //   FF 24, 31
+  //   Chrome 27, 36
+  // depends on multi_inherient.html
+
+  var assertEquals = function(a, b) {
+    if (a !== b) {
+      throw new Error("Assert fails: " + a + " === " + b);
+    }
+  };
+  var assertNotEquals = function(a, b) {
+    if (a === b) {
+      throw new Error("Assert fails: " + a + " !== " + b);
+    }
+  };
+
+  // class inherient: SC0 <-- SC1 <-- SC2
+  // related objects: o0      o1      o2
+  var SC0 = function SC0() {
+  };
+  var o0 = new SC0();
+
+  var SC1 = function SC1() {
+  };
+  // The constructor.prototype must be set before
+  // creating instance. Otherwise all instances
+  // prototype should be assigned manually.
+  // See multi_inherient.html
+  SC1.prototype = o0;
+  var o1 = new SC1();
+
+  var SC2 = function SC2() {
+  };
+  SC2.prototype = o1;
+  var o2 = new SC2();
+
+  o0.p0 = 'property 0 in o0';
+  assertEquals(o0.p0, o1.p0);
+  assertEquals(o0.p0, o2.p0);
+
+  o1.p1 = 'property 1 in o1';
+  assertEquals(o1.p1, o2.p1);
+
+
+  // override the o0.p0 by o1.p0
+  o1.p0 = "property 0 in o1";
+  assertNotEquals(o0.p0, o1.p0);
+  assertNotEquals(o0.p0, o2.p0);
+  assertEquals(o1.p0, o2.p0);
+
+  // recover it
+  delete o1.p0;
+  assertEquals(o0.p0, o1.p0);
+  assertEquals(o0.p0, o2.p0);
+
+</script>
