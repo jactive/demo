@@ -1,7 +1,3 @@
-aws dynamodb create-table --cli-input-json file://create-table.json
-aws dynamodb list-tables
-aws dynamodb describe-table --table-name test_table
-
 {
    "TableName": "test_table",
    "AttributeDefinitions": [

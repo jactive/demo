@@ -1,0 +1,4 @@
+aws dynamodb delete-table --table-name test_table
+aws dynamodb create-table --cli-input-json file://jsons/create-table.json
+aws dynamodb list-tables
+aws dynamodb describe-table --table-name test_table

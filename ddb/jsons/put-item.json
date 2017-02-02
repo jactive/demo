@@ -1,7 +1,3 @@
-aws dynamodb put-item --generate-cli-skeleton
-aws dynamodb put-item --cli-input-json file://put-item.json
-aws dynamodb delete-item --table-name test_table --key '{"ha" : {"S": "my ha"}, "ra": {"N": "1"}}'
-
 {
     "TableName": "test_table",
     "Item": {

@@ -1,6 +1,3 @@
-aws dynamodb update-item --generate-cli-skeleton
-aws dynamodb update-item --cli-input-json file://update-item.json
-
 {
     "TableName": "test_table",
     "Key": {
@@ -14,7 +11,7 @@ aws dynamodb update-item --cli-input-json file://update-item.json
     "ReturnValues": "UPDATED_OLD",
     "ReturnConsumedCapacity": "INDEXES",
     "ReturnItemCollectionMetrics": "SIZE",
-    "UpdateExpression": "ADD cnt :incr SET #c1=list_append(#c1, :c1), c2=:a_set",
+    "UpdateExpression": "ADD cnt :incr SET #c1=list_append(:c1, #c1), c2=:a_set",
     "ConditionExpression": "attribute_exists(cnt) AND cnt<:max or attribute_not_exists(cnt)",
     "ExpressionAttributeNames": {
         "#c1": "c1"
