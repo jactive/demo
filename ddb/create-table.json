@@ -1,0 +1,89 @@
+aws dynamodb create-table --cli-input-json file://create-table.json
+aws dynamodb list-tables
+aws dynamodb describe-table --table-name test_table
+
+{
+   "TableName": "test_table",
+   "AttributeDefinitions": [
+      {
+         "AttributeName": "ha",
+         "AttributeType": "S"
+      },
+      {
+         "AttributeName": "ra",
+         "AttributeType": "N"
+      },
+      {
+         "AttributeName": "g_ha",
+         "AttributeType": "S"
+      },
+      {
+         "AttributeName": "g_ra",
+         "AttributeType": "N"
+      },
+      {
+         "AttributeName": "l_ra",
+         "AttributeType": "N"
+      }
+   ],
+   "KeySchema": [
+      {
+         "AttributeName": "ha",
+         "KeyType": "HASH"
+      },
+      {
+         "AttributeName": "ra",
+         "KeyType": "RANGE"
+      }
+   ],
+   "GlobalSecondaryIndexes": [
+      {
+         "IndexName": "gsi1",
+         "KeySchema": [
+            {
+               "AttributeName": "g_ha",
+               "KeyType": "HASH"
+            },
+            {
+               "AttributeName": "g_ra",
+               "KeyType": "RANGE"
+            }
+         ],
+         "Projection": {
+            "ProjectionType": "INCLUDE",
+            "NonKeyAttributes": [ "c1", "c2" ]
+         },
+         "ProvisionedThroughput": {
+            "ReadCapacityUnits":  3,
+            "WriteCapacityUnits": 2
+         }
+      }
+   ],
+   "LocalSecondaryIndexes": [
+      {
+         "IndexName": "lsi1",
+         "KeySchema": [
+            {
+               "AttributeName": "ha",
+               "KeyType": "HASH"
+            },
+            {
+               "AttributeName": "l_ra",
+               "KeyType": "RANGE"
+            }
+         ],
+         "Projection": {
+            "ProjectionType": "INCLUDE",
+            "NonKeyAttributes": [ "c1", "c2" ]
+         }
+      }
+   ],
+   "ProvisionedThroughput": {
+      "ReadCapacityUnits":  4,
+      "WriteCapacityUnits": 3
+   },
+   "StreamSpecification": {
+      "StreamEnabled": true,
+      "StreamViewType": "NEW_AND_OLD_IMAGES"
+   }
+}

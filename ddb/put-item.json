@@ -1,0 +1,26 @@
+aws dynamodb put-item --generate-cli-skeleton
+aws dynamodb put-item --cli-input-json file://put-item.json
+aws dynamodb delete-item --table-name test_table --key '{"ha" : {"S": "my ha"}, "ra": {"N": "1"}}'
+
+{
+    "TableName": "test_table",
+    "Item": {
+        "ha": { "S" : "my ha" },
+        "ra": { "N" : "1" },
+        "g_ha": { "S" : "my g_ha" },
+        "g_ra": { "N" : "22" },
+        "l_ra": { "N" : "333" },
+        "c0" : { "SS" : ["my first c0", "my second c0"] },
+        "c1" : {
+            "L" : [
+                { "S": "great c1 value" },
+                { "S": "another grand c1 value" }
+             ]
+        },
+        "c2" : { "NS" : ["4001", "4002"] }
+    },
+    "ReturnValues": "ALL_OLD",
+    "ReturnConsumedCapacity": "INDEXES",
+    "ReturnItemCollectionMetrics": "SIZE",
+    "ConditionExpression": "attribute_not_exists(ha)"
+}
