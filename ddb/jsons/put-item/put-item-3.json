@@ -1,0 +1,16 @@
+{
+    "TableName": "test_table",
+    "Item": {
+        "ha": { "S" : "my ha" },
+        "ra": { "N" : "3" },
+        "g_ha": { "S" : "my g_ha. ra in [2,5]" },
+        "g_ra": { "N" : "2345" },
+        "l_ra": { "N" : "2345000" },
+        "c0" : { "S" : "my ha/3's c0" },
+        "c1" : { "S" : "my ha/3's c1" },
+        "c2" : { "S" : "my ha/3's c2" }
+    },
+    "ReturnValues": "ALL_OLD",
+    "ReturnConsumedCapacity": "INDEXES",
+    "ReturnItemCollectionMetrics": "SIZE"
+}

@@ -50,8 +50,8 @@
             "NonKeyAttributes": [ "c1", "c2" ]
          },
          "ProvisionedThroughput": {
-            "ReadCapacityUnits":  3,
-            "WriteCapacityUnits": 2
+            "ReadCapacityUnits":  1,
+            "WriteCapacityUnits": 1
          }
       }
    ],
@@ -75,8 +75,8 @@
       }
    ],
    "ProvisionedThroughput": {
-      "ReadCapacityUnits":  4,
-      "WriteCapacityUnits": 3
+      "ReadCapacityUnits":  1,
+      "WriteCapacityUnits": 1
    },
    "StreamSpecification": {
       "StreamEnabled": true,

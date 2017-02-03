@@ -1,2 +1,3 @@
+aws dynamodb update-item help
 aws dynamodb update-item --generate-cli-skeleton
 aws dynamodb update-item --cli-input-json file://jsons/update-item.json

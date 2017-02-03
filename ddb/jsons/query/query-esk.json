@@ -1,0 +1,22 @@
+{
+    "TableName": "test_table",
+    "Select": "SPECIFIC_ATTRIBUTES",
+    "Limit": 3,
+    "ConsistentRead": false,
+    "ScanIndexForward": false,
+    "ExclusiveStartKey": {
+        "ra": { "N": "2" }
+    },
+    "ReturnConsumedCapacity": "INDEXES",
+    "ProjectionExpression": "#c1, c2",
+    "FilterExpression": "attribute_exists(#c1) and attribute_not_exists(cnt)",
+    "KeyConditionExpression": "ha=:ha",
+    "ExpressionAttributeNames": {
+        "#c1": "c1"
+    },
+    "ExpressionAttributeValues": {
+        ":ha": {
+            "S": "my ha"
+        }
+    }
+}

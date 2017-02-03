@@ -1,0 +1,18 @@
+# clean
+aws dynamodb delete-item --table-name test_table --key '{"ha" : {"S": "my ha"}, "ra": {"N": "1"}}'
+aws dynamodb delete-item --table-name test_table --key '{"ha" : {"S": "my ha"}, "ra": {"N": "2"}}'
+aws dynamodb delete-item --table-name test_table --key '{"ha" : {"S": "my ha"}, "ra": {"N": "3"}}'
+aws dynamodb delete-item --table-name test_table --key '{"ha" : {"S": "my ha"}, "ra": {"N": "4"}}'
+aws dynamodb delete-item --table-name test_table --key '{"ha" : {"S": "my ha"}, "ra": {"N": "5"}}'
+
+# prepare
+aws dynamodb put-item --cli-input-json file://jsons/put-item/put-item.json
+aws dynamodb put-item --cli-input-json file://jsons/put-item/put-item-2.json
+aws dynamodb put-item --cli-input-json file://jsons/put-item/put-item-3.json
+aws dynamodb put-item --cli-input-json file://jsons/put-item/put-item-4.json
+aws dynamodb put-item --cli-input-json file://jsons/put-item/put-item-5.json
+
+aws dynamodb query help
+aws dynamodb query --generate-cli-skeleton
+aws dynamodb query --cli-input-json file://jsons/query/query.json #! return more than 5 items.
+aws dynamodb query --cli-input-json file://jsons/query/query-esk.json #! doesn't work
