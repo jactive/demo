@@ -1,0 +1,8 @@
+download https://s3-us-west-2.amazonaws.com/dynamodb-local/dynamodb_local_latest.tar.gz
+About the downloadable version, check the document for nightly build version, https://goo.gl/JpMZXQ
+tar xzvf dynamodb_local_latest.tar.gz -C ddb-files && cd ddb-files
+java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb -delayTransientStatuses # -inMemory
+
+#! aws configure set dynamodb.endpoint-url http://localhost:8000 # doesn't work
+aws dynamodb create-table --cli-input-json file://jsons/create-table.json --endpoint-url http://localhost:8000
+aws dynamodb list-tables --endpoint-url http://localhost:8000
