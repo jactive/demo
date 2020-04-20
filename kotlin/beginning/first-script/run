@@ -1,0 +1,1 @@
+kotlinc -script list_folders.kts -- -d /
