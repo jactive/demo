@@ -1,0 +1,103 @@
+<style>
+  *{
+    box-sizing:border-box;           /* easier box-model calculations */
+    -webkit-box-sizing: border-box;
+  }
+  html, body {
+    height: 100%;
+  }
+
+  textarea {
+    font-size: 1.3em;
+    margin: 1em;
+    position: fixed;
+    width:  calc(100vw - 5em);      /* calc and viewport to the rescue */
+    height: calc(100vh - 5em);
+  }
+  button {
+    position: fixed;
+    margin: 1em;
+    top : calc(100vh - 4em);
+    left : calc(100vw - 10em);
+  }
+</style>
+
+<textarea id="textarea">
+</textarea>
+<button onclick="note.resetWithContent()">Reset</button>
+
+<div id="content" hidden>
+
+</div>
+
+<script type="text/javascript">
+var note = (function() {
+   const textarea = document.getElementById("textarea");
+   const content = document.getElementById("content");
+   const autosaveInMillionSeconds = 3000;
+
+   class VersionedNote {
+      static LOCAL_STORAGE_ITEM_NAME = "versionedNote";
+
+      constructor() {
+         this.snapshot = this._read();
+      }
+
+      read() {
+         return this.snapshot.text;
+      }
+
+      _read() {
+         const serialized = localStorage.getItem(VersionedNote.LOCAL_STORAGE_ITEM_NAME);
+         if (serialized) {
+            return JSON.parse(serialized);
+         } else {
+            return this.snapshot || { text: "", version: this._createVersion() };
+         }
+      }
+
+      save(text) {
+         const current = this._read();
+         if (current.version > this.snapshot.version ) {
+            console.log("conflict, use theirs. ours are", text);
+            this.snapshot = current;
+         } else {
+            if (this.snapshot.text === text) {
+               // no change, ignored
+               console.debug("no change");
+            } else {
+               // change is saved
+               this.snapshot = { text, version: this._createVersion() };
+               const serialized = JSON.stringify(this.snapshot);
+               localStorage.setItem(VersionedNote.LOCAL_STORAGE_ITEM_NAME, serialized);
+               console.debug("saved");
+            }
+         }
+
+         return this.snapshot.text;
+      }
+
+      _createVersion() {
+         return new Date().getTime();
+      }
+   }
+
+   const versionedNote = new VersionedNote();
+
+   textarea.content = versionedNote.read();
+
+   function autosave() {
+       const text = versionedNote.save(textarea.value);
+       textarea.value = text;
+   }
+   setInterval(autosave, autosaveInMillionSeconds);
+
+   function resetWithContent() {
+      textarea.value = content.innerText;
+   }
+
+   return {
+     resetWithContent,
+   };
+})();
+</script>
