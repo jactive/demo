@@ -14,26 +14,141 @@
     width:  calc(100vw - 5em);      /* calc and viewport to the rescue */
     height: calc(100vh - 5em);
   }
-  button {
+  #reset {
     position: fixed;
     margin: 1em;
     top : calc(100vh - 4em);
     left : calc(100vw - 10em);
   }
+  #show {
+    position: fixed;
+    margin: 1em;
+    top : calc(100vh - 4em);
+    left : calc(100vw - 20em);
+  }
 </style>
 
 <textarea id="textarea">
 </textarea>
-<button onclick="note.resetWithContent()">Reset</button>
+<button id="reset" onclick="note.resetWithContent()">Reset</button>
+<button id="show" onclick="note.showConflicts()">Show Conflicts</button>
 
 <div id="content" hidden>
+import React, { Component } from "react";
+import { render } from "react-dom";
+import PropTypes from "prop-types";
+
+
+The criteria of a goal
+Goal should be a higher level than the project.
+Single feature development should not be a goal unless the feature benefit multiple business avenue.
+Are they SMART (Specific, Measurable, Achievable and Time bound)?
+  * Specific, what will be accomplished? What actions will you take?
+  * Measurable, What data will measure the goal? (How much? How many? How well?)
+  * Achievable, Is the goal doable? Do you have the necessary skills and resources?
+  * Relevant, How does the goal align with broader goals? Why is the result important?
+  * Time-Bound, What is the time frame for accomplishing the goal?
+  * https://inside.amazon.com/en/Employment/Career/goalsetting/Pages/default.aspx
+Do they make sense?
+Do they enable operations?
+Do they consider dependencies on partner teams/organizations?
+
+
+You are considered a technical leader on your team.
+You work efficiently and routinely deliver the right things with limited guidance.
+Your work focuses on complex, ambiguous problem areas in existing or new software initiatives.
+
+You take the long term view. You consider where each system is at in its lifecycle and where appropriate, proactively fix architecture deficiencies.
+You make existing systems simpler (e.g. by consolidating redundant systems, deleting unnecessary code, or removing/updating out of date documentation).
+You are able to take the lead on large projects that require the work of your team.
+You know how to divide a software project into parallel work that can be performed by you and other SDEs and then reassembled successfully into a cohesive launch.
+
+You understand the business impact of your systems and show good judgment when making technical trade-offs between your team’s short-term business or operational needs and long-term technology needs.
+You are a key influencer in team strategy. You drive mindful discussions with customers and peers.
+You bring perspective and provide context for current technology choices and guide future technology choices.
+You understand that not all problems are new (or require new software).
+You make appropriate architectural trade-offs (e.g., coarse or fine grained service separation?) Your code submissions and approach to work are exemplary – your solutions are inventive, secure, easily maintainable, appropriately scalable, and extensible.
+You write software that is easy for others to contribute to.
+
+
+You take ownership of team architecture, providing a system-wide view and design guidance.
+You make things simpler. You drive engineering best practices (e.g., Operational Excellence, Security, Quality, etc.) and set standards. You work to resolve the root cause of endemic problems including areas where your team limits the innovation of other teams (bottlenecks). This may require you to influence software decisions made by other teams.
+When confronted with discordant views, you are able to find the best way forward and influence others to follow that path (build consensus).
+You actively recruit and help others leverage your expertise, by coaching and mentoring in your organization (or at your location).
+You provide technical assessments for promotions to SDE II and SDE III.
+You contribute to the professional development of colleagues, improving their technical knowledge and the engineering practices.
+You ensure your team is stronger because of your presence, but does not require your presence to be successful.
+
+
+
+UserSessions
+{
+  "attributes": [
+
+  ],
+  "createdBy": "csowl@amazon@us-east-1",
+  "creationT": 1507834942,
+  "expireT": 1605093338,               // <-- expiration datetime
+  "ip": "72.21.198.64",
+  "isAuth": true,                      // <--- is authenticated
+  "lastAccessT": 1605062485,
+  "loginT": 1605050138,
+  "sessionId": "383701",
+  "ubid": "134-7419794-5981849",       // ubid
+  "updatedBy": "sus",
+  "updatedT": 1605062485,
+  "userId": "637961"
+}
+
+
+SellerCSBrowserSessions
+{
+  "bsId": 9292329208,
+  "createdBy": "sus",
+  "creationT": 1604541137,
+  "ip": "72.21.198.65",
+  "isActive": 0,
+  "lastAccessT": 1604543654,
+  "loginT": 1604541137,
+  "maxLifetimeT": 1604584337,
+  "sessionId": "383701",
+  "ttl": 1605145937,
+  "updatedBy": "sus",
+  "updatedT": 1604680347,
+  "userId": "637961"                   // foreign key of UserSessions
+}
+UserSessions 1<-->N  SellerCSBrowserSessions
+
+browser_sessions
+{
+  "clientId": "WorkforceManagementGoa-prod-na",
+  "createdAt": 1577481042679,
+  "identitySessionId": "DLGzQnkBm7-pMvrodwU9dcWrqNGlgKI5IoEcjZctndA",
+  "nonce": "1:-uwle7Qqv6HJA8qJHewGS15v5qMlof5OaQzHnUSOn58",
+  "status": "INACTIVE",
+  "updatedAt": 1577481042679
+}
+
+
+identity_sessions
+{
+  "createdAt": 1605057460000,
+  "expireAt": 1605143842,
+  "identitySessionId": "2GPST8nGluHc0-GbhYO9pGQfgSxT71tz0uV_UayZVps",
+  "status": "INACTIVE",
+  "subject": "priyanka483_ccu@intelenet@eu-west-1",
+  "updatedAt": 1605057500000
+}
 
 </div>
+
 
 <script type="text/javascript">
 var note = (function() {
    const textarea = document.getElementById("textarea");
    const content = document.getElementById("content");
+   const show = document.getElementById("show");
+   const conflicts = [];
    const autosaveInMillionSeconds = 3000;
 
    class VersionedNote {
@@ -60,6 +175,9 @@ var note = (function() {
          const current = this._read();
          if (current.version > this.snapshot.version ) {
             console.log("conflict, use theirs. ours are", text);
+            conflicts.push(Date() + "\n" + text);
+            show.style.fontWeight = '700';
+
             this.snapshot = current;
          } else {
             if (this.snapshot.text === text) {
@@ -84,7 +202,7 @@ var note = (function() {
 
    const versionedNote = new VersionedNote();
 
-   textarea.content = versionedNote.read();
+   textarea.value = versionedNote.read();
 
    function autosave() {
        const text = versionedNote.save(textarea.value);
@@ -96,8 +214,18 @@ var note = (function() {
       textarea.value = content.innerText;
    }
 
+   function showConflicts() {
+      print = (conflict, index) => {
+           console.log("- - - - - - - - Conflict -", index, "- - - - - - - - ");
+           console.log(conflict);
+      };
+
+      conflicts.forEach(print);
+   }
+
    return {
      resetWithContent,
+     showConflicts
    };
 })();
 </script>
